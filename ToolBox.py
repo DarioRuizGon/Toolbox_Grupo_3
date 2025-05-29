@@ -313,6 +313,23 @@ def get_features_num_regression(df, target_col, umbral_corr, p_value=None):
 
 
 def plot_features_num_regression(df, target_col="", columns=[], umbral_corr=0, pvalue=None):
+    
+    """
+    Pinta un gráfico de dispersión comparando la variable independiente con las variables dependientes que cumplan con los criterios de p-value y mayor que el umbral de correlación
+    Usa la función get_features_num_regression para obtener las columnas significativas y se hagan las comprobaciones necesarias.
+
+    Argumentos:
+    df (pd.DataFrame): El DataFrame con los datos.
+    target_col (str): Nombre de la columna objetivo o dependiente (debe ser numérica continua o discreta con alta cardinalidad).
+    columns (list of str): Lista de nombres de columnas categóricas a analizar. Si está vacía, se seleccionan automáticamente.
+    umbral_corr (float): Umbral de correlación minimo para filtrar las variables independientes en valores absolutos (valor entre 0 y 1).
+    pvalue (float): Nivel de significación estadística para los test (por defecto None, normalmente se usa 0.05).
+    
+
+    Devuelve:
+    list of str | None: Lista de variables númericas con relación estadísticamente significativa, o None si hay error.
+    """
+    
     #hacemos una llamda a la funcion get_features_num_regression para obtener las columnas significativas y se hagan las comprobaciones necesarias
     columnas_significativas = get_features_num_regression(df = df, target_col = target_col, umbral_corr = umbral_corr, p_value= pvalue)
     # Si columns es igual a cero utilizamos todas las columnas del dataframe 
