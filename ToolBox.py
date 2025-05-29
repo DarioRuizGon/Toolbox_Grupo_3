@@ -271,3 +271,5 @@ def get_features_num_regression(df, target_col, umbral_corr, p_value=None):
         else:
             print(f"{columna} NO pasa el test de p-value (p={p:.4f})")
         return columnas_significativas
+    
+    
