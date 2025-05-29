@@ -8,6 +8,27 @@ from scipy.stats import pearsonr
 
 
 def cardinalidad(df_in, umbral_categoria, umbral_countinua):
+    '''
+    Esta función obtiene la cardinalidad de cada una de las variables y en función de dicha cardinalidad sugiere un tipo de variable.
+    Los tipos posibles son: binaria, categórica, numérica discreta y numérica continua.
+    Nota: los tipos mostrados en el DataFrame que retorna la función son solo una sugerencia, es mejor guardar el DataFrame en una variable y modificar los tipos si es necesario.
+
+    
+    Argumentos:
+    
+    df_in (pd.DataFrame): dataset en formato DataFrame para clasificar sus variables.
+
+    umbral_categoría (int): número máximo de valores únicos para clasificar una variable como categórica.
+
+    umbral_continua (int): porcentaje mínimo de valores únicos que debe tener una variable para clasificarla como numérica continua.
+
+    
+    Retorna:
+
+    pd.DataFrame: DataFrame con 4 columnas: nombre de la variable, cardinalidad, porcentaje de valores únicos y tipo sugerido
+    '''
+
+
     cardinalidad = [df_in[col].nunique() for col in df_in.columns]
     cardinalidad_por = [df_in[col].nunique()/len(df_in[col]) for col in df_in.columns]
     dict_df = {"nombre_variable": df_in.columns, "valores_unicos": cardinalidad, "cardinalidad": cardinalidad_por}
@@ -20,6 +41,21 @@ def cardinalidad(df_in, umbral_categoria, umbral_countinua):
 
 
 def describe_df(df_in):
+
+    '''
+    Esta función obtiene para las variables de un dataset el tipo de datos que contienen, su porcentaje de nulos, sus valores únicos y su cardinalidad.
+
+    
+    Argumentos:
+    
+    df_in (pd.DataFrame): dataset en formato DataFrame para obtener los datos mencionados.
+
+    
+    Retorna:
+
+    pd.DataFrame: un DataFrame cuyas columnas son las mismas que las del DataFrame que se pasa como argumento y cuyas filas son los datos que se proporciona sobre las variables, a saber: tipo de datos que contienen, porcentaje de nulos, valores únicos y cardinalidad.
+    '''
+
     data_type = [df_in[col].dtype for col in df_in.columns]
     missings = [df_in[col].isna().value_counts(normalize = True)[True] if True in df_in[col].isna().value_counts().index else 0.0 for col in df_in.columns ]
     cardinalidad = [df_in[col].nunique() for col in df_in.columns]
@@ -273,3 +309,29 @@ def get_features_num_regression(df, target_col, umbral_corr, p_value=None):
         return columnas_significativas
     
     
+def plot_features_num_regression(df, target_col="", columns=[], umbral_corr=0, pvalue=None):
+    #hacemos una llamda a la funcion get_features_num_regression para obtener las columnas significativas y se hagan las comprobaciones necesarias
+    columnas_significativas = get_features_num_regression(df = df, target_col = target_col, umbral_corr = umbral_corr, p_value= pvalue)
+    # Si columns es igual a cero utilizamos todas las columnas del dataframe 
+    if len(columns) == 0:
+        columns = df.columns[:]
+    
+    # Hacemos una intersección entre las columnas del dataframe y las columnas significativas
+    columnas_validadas = [col for col in columns if col in columnas_significativas]
+    #En caso de no haber columnas validas, mostramos un mensaje y salimos de la funcion
+    if not columnas_validadas:
+        print("No hay columnas que cumplan con los criterios de correlación y p-value.")
+        return
+    else:
+        ini = 0
+        # Utilizamos un bucle para que grafique de 5 en 5
+        while ini <= len(columnas_validadas):
+            columnas_validadas1 = columnas_validadas[ini:ini+5]
+            # Grafico pairplot con target col como variable dependiente representada en el eje Y
+            sns.pairplot(df, x_vars=columnas_validadas1, y_vars=[target_col])
+            # Añadimo titulo al gráfico
+            plt.suptitle(f"Gráficos de dispersión para {target_col} y columnas significativas", y=1.04)
+            # Mostramos el gráfico
+            plt.show()
+            #sumamos 5 al indice para que se muestren las siguientes 5 columnas
+            ini += 5
