@@ -7,7 +7,7 @@ from pandas.api.types import is_numeric_dtype
 from scipy.stats import pearsonr
 
 
-def cardinalidad(df_in, umbral_categoria, umbral_countinua):
+def cardinalidad(df_in, umbral_categoria, umbral_continua = 0.05):
     '''
     Esta función obtiene la cardinalidad de cada una de las variables y en función de dicha cardinalidad sugiere un tipo de variable.
     Los tipos posibles son: binaria, categórica, numérica discreta y numérica continua.
@@ -36,7 +36,7 @@ def cardinalidad(df_in, umbral_categoria, umbral_countinua):
     nuevo_df["tipo_sugerido"] = "Categórica"
     nuevo_df.loc[nuevo_df["valores_unicos"] == 2, "tipo_sugerido"] = "Binaria"
     nuevo_df.loc[nuevo_df["valores_unicos"] >= umbral_categoria, "tipo_sugerido"] = "Numerica Discreta"
-    nuevo_df.loc[nuevo_df["cardinalidad"] >= umbral_countinua, "tipo_sugerido"] = "Numerica Continua"
+    nuevo_df.loc[nuevo_df["cardinalidad"] >= umbral_continua, "tipo_sugerido"] = "Numerica Continua"
     return nuevo_df
 
 
@@ -306,9 +306,12 @@ def get_features_num_regression(df, target_col, umbral_corr, p_value=None):
             print(f" {columna} pasa el test de p-value (p={p:.4f})")
         else:
             print(f"{columna} NO pasa el test de p-value (p={p:.4f})")
-        return columnas_significativas
+            
+    return columnas_significativas
     
-    
+
+
+
 def plot_features_num_regression(df, target_col="", columns=[], umbral_corr=0, pvalue=None):
     #hacemos una llamda a la funcion get_features_num_regression para obtener las columnas significativas y se hagan las comprobaciones necesarias
     columnas_significativas = get_features_num_regression(df = df, target_col = target_col, umbral_corr = umbral_corr, p_value= pvalue)
