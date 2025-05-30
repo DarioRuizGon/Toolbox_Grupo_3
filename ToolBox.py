@@ -7,7 +7,7 @@ from pandas.api.types import is_numeric_dtype
 from scipy.stats import pearsonr
 
 
-def cardinalidad(df_in, umbral_categoria, umbral_continua = 0.05):
+def cardinalidad(df_in, umbral_categoria, umbral_continua = 30):
     '''
     Esta función obtiene la cardinalidad de cada una de las variables y en función de dicha cardinalidad sugiere un tipo de variable.
     Los tipos posibles son: binaria, categórica, numérica discreta y numérica continua.
